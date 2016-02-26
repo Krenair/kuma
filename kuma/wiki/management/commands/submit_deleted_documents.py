@@ -44,13 +44,11 @@ class Command(BaseCommand):
         # first get the deleted document logs for the last n days
         ttl = timezone.now() - timedelta(days=options['days'])
         logged_deletions = DocumentDeletionLog.objects.filter(
-            timestamp__gte=ttl,
-        ).filter(
-            # They use "spam" or "junk"
+            # They use "spam"
             # deleting spam revisions;
             # the spam makes me cry.  -- willkg
-            models.Q(reason__icontains='spam') |
-            models.Q(reason__icontains='junk')
+            timestamp__gte=ttl,
+            reason__icontains='spam'
         )
         count = logged_deletions.count()
         self.stdout.write('Checking %s deleted document logs' % count)
